@@ -2,7 +2,6 @@ version: 2
 
 sources:
   - name: raw_ecommerce
-    database: data_warehouse
     schema: raw
     tables:
       - name: olist_customers_dataset

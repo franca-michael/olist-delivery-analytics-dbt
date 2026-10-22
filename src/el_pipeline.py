@@ -1,5 +1,7 @@
+from datetime import datetime, timezone
+
 import pandas as pd
-from sqlalchemy import inspect
+from sqlalchemy import inspect, text
 from db_connection import get_oltp_engine, get_olap_engine
 
 def run_extract_and_load():
@@ -8,6 +10,10 @@ def run_extract_and_load():
     print("Conectando aos bancos de dados...")
     oltp_engine = get_oltp_engine()
     olap_engine = get_olap_engine()
+    
+    # num banco recém-criado o schema 'raw' ainda não existe, e o to_sql não o cria sozinho
+    with olap_engine.begin() as conn:
+        conn.execute(text("CREATE SCHEMA IF NOT EXISTS raw"))
     
     inspector = inspect(oltp_engine)
     tables = inspector.get_table_names(schema="public")
@@ -21,9 +27,12 @@ def run_extract_and_load():
         chunk_iterator = pd.read_sql_table(table, oltp_engine, chunksize=10000)
         
         is_first_chunk = True
+        # horário da carga, igual para todas as linhas desta execução (usado no source freshness do dbt)
+        loaded_at = datetime.now(timezone.utc)
         
         # loop para processar pedaço por pedaço
         for chunk in chunk_iterator:
+            chunk["_loaded_at"] = loaded_at
             if is_first_chunk:
                 # cria a tabela no schema 'raw' do OLAP e substitui se já existir
                 chunk.to_sql(table, olap_engine, schema='raw', if_exists='replace', index=False)

@@ -24,7 +24,7 @@ flowchart LR
 
 ## Como rodar
 
-Pré-requisitos: Docker Desktop, Python 3.12, Poetry e Git.
+Pré-requisitos: Docker Desktop, Python 3.12 (o dbt ainda não suporta versões mais novas), Poetry e Git.
 
 1. **Clonar e configurar**
    ```bash
@@ -37,8 +37,9 @@ Pré-requisitos: Docker Desktop, Python 3.12, Poetry e Git.
    ```bash
    docker compose up -d
    ```
-4. **Instalar dependências**
+4. **Instalar dependências** (com Python 3.12)
    ```bash
+   poetry env use python3.12     # no Windows: poetry env use py -3.12
    poetry install
    ```
 5. **Carregar os dados** (CSV → OLTP → schema `raw` do OLAP)

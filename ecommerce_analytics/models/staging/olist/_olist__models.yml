@@ -24,3 +24,11 @@ models:
         description: First 5 digits of the ZIP code, as text with leading zeros.
       - name: seller_state
         description: Brazilian state (UF), upper case.
+  - name: stg_olist__products
+    description: One row per product. Source typos in column names (lenght) fixed here.
+    columns:
+      - name: product_id
+        description: Primary key.
+        data_tests: [unique, not_null]
+      - name: product_category_name
+        description: Category in Portuguese. Null for some products.

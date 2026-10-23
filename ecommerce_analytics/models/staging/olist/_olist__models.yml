@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: stg_olist__customers
+    description: One row per order-customer. The same person has one customer_unique_id and many customer_id.
+    columns:
+      - name: customer_id
+        description: Primary key. One per order.
+        data_tests: [unique, not_null]
+      - name: customer_unique_id
+        description: The real customer. Not unique in this table.
+        data_tests: [not_null]
+      - name: customer_zip_code_prefix
+        description: First 5 digits of the ZIP code, as text with leading zeros.
+      - name: customer_state
+        description: Brazilian state (UF), upper case.

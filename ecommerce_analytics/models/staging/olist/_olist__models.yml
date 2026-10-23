@@ -117,3 +117,31 @@ models:
                 values: [credit_card, boleto, voucher, debit_card, not_defined]
       - name: payment_value
         description: Amount paid with this method, in BRL.
+  - name: stg_olist__reviews
+    description: >
+      One row per review and order. review_id is NOT unique in the source: the same review
+      can be linked to more than one order, so the grain is review_id + order_id.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [review_id, order_id]
+    columns:
+      - name: review_sk
+        description: Surrogate key built from review_id + order_id.
+        data_tests: [unique, not_null]
+      - name: review_id
+        data_tests: [not_null]
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_olist__orders')
+                field: order_id
+      - name: review_score
+        description: Score from 1 to 5.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+                quote: false

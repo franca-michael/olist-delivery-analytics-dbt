@@ -32,3 +32,34 @@ models:
         data_tests: [unique, not_null]
       - name: product_category_name
         description: Category in Portuguese. Null for some products.
+  - name: stg_olist__orders
+    description: One row per order. Timestamps typed and renamed to <event>_at.
+    columns:
+      - name: order_id
+        description: Primary key.
+        data_tests: [unique, not_null]
+      - name: customer_id
+        description: Order-level customer key (changes on every order). Use customer_unique_id in stg_olist__customers for the real person.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_olist__customers')
+                field: customer_id
+      - name: order_status
+        description: Current status of the order.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [created, approved, invoiced, processing, shipped, delivered, unavailable, canceled]
+      - name: purchased_at
+        description: When the customer placed the order.
+        data_tests: [not_null]
+      - name: approved_at
+        description: When the payment was approved.
+      - name: shipped_at
+        description: When the seller handed the order to the carrier.
+      - name: delivered_at
+        description: When the customer received the order. Null if not delivered.
+      - name: estimated_delivery_at
+        description: Delivery date promised to the customer at purchase. Base of the on-time rule (OTIF).

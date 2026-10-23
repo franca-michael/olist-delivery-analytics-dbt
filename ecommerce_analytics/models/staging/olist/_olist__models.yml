@@ -97,3 +97,23 @@ models:
         description: Item price in BRL.
       - name: freight_value
         description: Freight charged for the item in BRL.
+  - name: stg_olist__payments
+    description: One row per payment. An order can have several payments (e.g. voucher + credit card).
+    columns:
+      - name: payment_sk
+        description: Surrogate key built from order_id + payment_sequential.
+        data_tests: [unique, not_null]
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_olist__orders')
+                field: order_id
+      - name: payment_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [credit_card, boleto, voucher, debit_card, not_defined]
+      - name: payment_value
+        description: Amount paid with this method, in BRL.

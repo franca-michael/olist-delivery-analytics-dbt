@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: olist
+    description: Brazilian e-commerce public dataset by Olist (Kaggle), loaded as-is into the raw schema by src/el_pipeline.py.
+    schema: raw
+    tables:
+      - name: orders
+        identifier: olist_orders_dataset
+        description: One row per order, with lifecycle timestamps and the delivery date promised to the customer.
+      - name: order_items
+        identifier: olist_order_items_dataset
+        description: One row per item within an order.
+      - name: customers
+        identifier: olist_customers_dataset
+        description: One row per order-customer. The same person gets a new customer_id on every order.
+      - name: sellers
+        identifier: olist_sellers_dataset
+        description: One row per seller.
+      - name: products
+        identifier: olist_products_dataset
+        description: One row per product, with category and physical dimensions.
+      - name: payments
+        identifier: olist_order_payments_dataset
+        description: One row per payment of an order. An order can be paid with several methods.
+      - name: reviews
+        identifier: olist_order_reviews_dataset
+        description: One row per customer review of an order.

@@ -51,6 +51,7 @@ Pré-requisitos: Docker Desktop, Python 3.12 (o dbt ainda não suporta versões 
    ```bash
    set -a; source .env; set +a
    cd ecommerce_analytics
+   poetry run dbt deps
    poetry run dbt build
    cd ..
    ```
@@ -64,11 +65,10 @@ Pré-requisitos: Docker Desktop, Python 3.12 (o dbt ainda não suporta versões 
 | Entrega | Situação |
 |---|---|
 | Infraestrutura em containers e ingestão em lotes | Pronto |
-| Staging de clientes e pedidos, com testes | Pronto |
+| Staging das 7 tabelas da Olist, tipado e testado | Pronto |
 | Fato inicial de pedidos por cliente | Pronto |
 | Dashboard inicial | Pronto |
-| Staging das 7 tabelas da Olist | Próxima etapa |
-| Modelo dimensional (fatos e dimensões) | Planejado |
+| Modelo dimensional (fatos e dimensões) | Próxima etapa |
 | Regra de OTIF documentada | Planejado |
 | Testes com dbt_utils, singulares e unitários | Planejado |
 | dbt docs publicado e CI no GitHub Actions | Planejado |

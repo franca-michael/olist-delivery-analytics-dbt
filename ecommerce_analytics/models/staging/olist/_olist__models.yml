@@ -1,0 +1,147 @@
+version: 2
+
+models:
+  - name: stg_olist__customers
+    description: One row per order-customer. The same person has one customer_unique_id and many customer_id.
+    columns:
+      - name: customer_id
+        description: Primary key. One per order.
+        data_tests: [unique, not_null]
+      - name: customer_unique_id
+        description: The real customer. Not unique in this table.
+        data_tests: [not_null]
+      - name: customer_zip_code_prefix
+        description: First 5 digits of the ZIP code, as text with leading zeros.
+      - name: customer_state
+        description: Brazilian state (UF), upper case.
+  - name: stg_olist__sellers
+    description: One row per seller.
+    columns:
+      - name: seller_id
+        description: Primary key.
+        data_tests: [unique, not_null]
+      - name: seller_zip_code_prefix
+        description: First 5 digits of the ZIP code, as text with leading zeros.
+      - name: seller_state
+        description: Brazilian state (UF), upper case.
+  - name: stg_olist__products
+    description: One row per product. Source typos in column names (lenght) fixed here.
+    columns:
+      - name: product_id
+        description: Primary key.
+        data_tests: [unique, not_null]
+      - name: product_category_name
+        description: Category in Portuguese. Null for some products.
+  - name: stg_olist__orders
+    description: One row per order. Timestamps typed and renamed to <event>_at.
+    columns:
+      - name: order_id
+        description: Primary key.
+        data_tests: [unique, not_null]
+      - name: customer_id
+        description: Order-level customer key (changes on every order). Use customer_unique_id in stg_olist__customers for the real person.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_olist__customers')
+                field: customer_id
+      - name: order_status
+        description: Current status of the order.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [created, approved, invoiced, processing, shipped, delivered, unavailable, canceled]
+      - name: purchased_at
+        description: When the customer placed the order.
+        data_tests: [not_null]
+      - name: approved_at
+        description: When the payment was approved.
+      - name: shipped_at
+        description: When the seller handed the order to the carrier.
+      - name: delivered_at
+        description: When the customer received the order. Null if not delivered.
+      - name: estimated_delivery_at
+        description: Delivery date promised to the customer at purchase. Base of the on-time rule (OTIF).
+  - name: stg_olist__order_items
+    description: One row per item within an order.
+    columns:
+      - name: order_item_sk
+        description: Surrogate key built from order_id + order_item_id.
+        data_tests: [unique, not_null]
+      - name: order_id
+        description: Order the item belongs to.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_olist__orders')
+                field: order_id
+      - name: order_item_id
+        description: Sequential number of the item within the order (1, 2, 3...).
+      - name: product_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_olist__products')
+                field: product_id
+      - name: seller_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_olist__sellers')
+                field: seller_id
+      - name: shipping_limit_at
+        description: Deadline for the seller to hand the item to the carrier.
+      - name: price
+        description: Item price in BRL.
+      - name: freight_value
+        description: Freight charged for the item in BRL.
+  - name: stg_olist__payments
+    description: One row per payment. An order can have several payments (e.g. voucher + credit card).
+    columns:
+      - name: payment_sk
+        description: Surrogate key built from order_id + payment_sequential.
+        data_tests: [unique, not_null]
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_olist__orders')
+                field: order_id
+      - name: payment_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [credit_card, boleto, voucher, debit_card, not_defined]
+      - name: payment_value
+        description: Amount paid with this method, in BRL.
+  - name: stg_olist__reviews
+    description: >
+      One row per review and order. review_id is NOT unique in the source: the same review
+      can be linked to more than one order, so the grain is review_id + order_id.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [review_id, order_id]
+    columns:
+      - name: review_sk
+        description: Surrogate key built from review_id + order_id.
+        data_tests: [unique, not_null]
+      - name: review_id
+        data_tests: [not_null]
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_olist__orders')
+                field: order_id
+      - name: review_score
+        description: Score from 1 to 5.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [1, 2, 3, 4, 5]
+                quote: false

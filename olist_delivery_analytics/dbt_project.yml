@@ -1,0 +1,23 @@
+name: 'olist_delivery_analytics'
+version: '1.0.0'
+
+profile: 'olist_delivery_analytics'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# materialização por camada: a chave tem que ter exatamente o nome da pasta
+models:
+  olist_delivery_analytics:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

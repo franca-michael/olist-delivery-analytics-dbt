@@ -1,4 +1,4 @@
-ecommerce_analytics:
+olist_delivery_analytics:
   target: dev
   outputs:
     dev:

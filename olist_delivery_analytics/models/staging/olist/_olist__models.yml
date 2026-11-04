@@ -145,3 +145,9 @@ models:
               arguments:
                 values: [1, 2, 3, 4, 5]
                 quote: false
+  - name: stg_olist__category_translation
+    description: One row per product category, with its English name.
+    columns:
+      - name: product_category_name
+        description: Primary key. Category name in Portuguese, as in stg_olist__products.
+        data_tests: [unique, not_null]

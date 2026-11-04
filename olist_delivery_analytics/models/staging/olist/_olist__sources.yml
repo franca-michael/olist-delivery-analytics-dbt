@@ -26,3 +26,6 @@ sources:
       - name: reviews
         identifier: olist_order_reviews_dataset
         description: One row per customer review of an order.
+      - name: category_translation
+        identifier: product_category_name_translation
+        description: Portuguese to English names of product categories.

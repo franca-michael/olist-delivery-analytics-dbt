@@ -6,3 +6,8 @@ models:
     columns:
       - name: order_id
         data_tests: [unique, not_null]
+  - name: int_payments__aggregated_to_order
+    description: One row per order that has payments. Payment totals rolled up to the order.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]

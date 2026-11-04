@@ -1,0 +1,8 @@
+version: 2
+
+models:
+  - name: int_order_items__aggregated_to_order
+    description: One row per order that has items. Item totals rolled up to the order.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]

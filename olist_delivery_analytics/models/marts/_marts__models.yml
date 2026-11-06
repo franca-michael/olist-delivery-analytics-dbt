@@ -7,3 +7,9 @@ models:
       - name: date_day
         description: Primary key.
         data_tests: [unique, not_null]
+  - name: dim_sellers
+    description: One row per seller.
+    columns:
+      - name: seller_id
+        description: Primary key.
+        data_tests: [unique, not_null]

@@ -13,3 +13,11 @@ models:
       - name: seller_id
         description: Primary key.
         data_tests: [unique, not_null]
+  - name: dim_products
+    description: One row per product, with the category in Portuguese and English.
+    columns:
+      - name: product_id
+        description: Primary key.
+        data_tests: [unique, not_null]
+      - name: product_category_name_english
+        description: English category name. Falls back to the Portuguese name when the source has no translation.

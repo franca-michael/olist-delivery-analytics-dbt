@@ -21,3 +21,13 @@ models:
         data_tests: [unique, not_null]
       - name: product_category_name_english
         description: English category name. Falls back to the Portuguese name when the source has no translation.
+  - name: dim_customers
+    description: >
+      One row per real customer (customer_unique_id). Location from the most recent order;
+      first and last purchase and number of orders.
+    columns:
+      - name: customer_unique_id
+        description: Primary key.
+        data_tests: [unique, not_null]
+      - name: orders_count
+        description: Number of orders placed by the customer.

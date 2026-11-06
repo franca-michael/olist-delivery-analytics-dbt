@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: One row per calendar day from 2016-01-01 to 2018-12-31.
+    columns:
+      - name: date_day
+        description: Primary key.
+        data_tests: [unique, not_null]

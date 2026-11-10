@@ -10,7 +10,7 @@ com modelagem dimensional em dbt, testes, documentação e CI.
 flowchart LR
     CSV["CSVs da Olist<br/>(Kaggle)"] --> OLTP["Postgres OLTP<br/>(simula o sistema de origem)"]
     OLTP -->|"Python EL em lotes"| RAW["Postgres OLAP<br/>schema raw"]
-    RAW -->|dbt| STG[staging] --> MARTS[marts]
+    RAW -->|dbt| STG[staging] --> INT[intermediate] --> MARTS["marts<br/>fatos e dimensões"]
     MARTS --> DASH[Streamlit]
 ```
 
@@ -65,11 +65,10 @@ Pré-requisitos: Docker Desktop, Python 3.12 (o dbt ainda não suporta versões 
 | Entrega | Situação |
 |---|---|
 | Infraestrutura em containers e ingestão em lotes | Pronto |
-| Staging das 7 tabelas da Olist, tipado e testado | Pronto |
-| Fato inicial de pedidos por cliente | Pronto |
+| Staging das 8 tabelas da Olist, tipado e testado | Pronto |
 | Dashboard inicial | Pronto |
-| Modelo dimensional (fatos e dimensões) | Próxima etapa |
-| Regra de OTIF documentada | Planejado |
+| Modelo dimensional: fct_orders, fct_order_items e 4 dimensões, com grão documentado | Pronto |
+| Regra de OTIF documentada | Próxima etapa |
 | Testes com dbt_utils, singulares e unitários | Planejado |
 | dbt docs publicado e CI no GitHub Actions | Planejado |
 

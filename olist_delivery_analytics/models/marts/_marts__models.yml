@@ -31,6 +31,45 @@ models:
         data_tests: [unique, not_null]
       - name: orders_count
         description: Number of orders placed by the customer.
+  - name: fct_orders
+    description: >
+      One row per order. Lifecycle dates from the order, item, payment and review
+      totals from the intermediate models, and the real customer (customer_unique_id).
+    data_tests:
+      # fan-out: se algum join duplicar pedidos, o fato fica maior que o staging
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: ref('stg_olist__orders')
+    columns:
+      - name: order_id
+        description: Primary key.
+        data_tests: [unique, not_null]
+      - name: customer_unique_id
+        description: The real customer. Foreign key to dim_customers.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_unique_id
+      - name: delivery_state
+        description: >
+          State of the delivery address of this order. Kept on the fact on purpose:
+          dim_customers holds only the latest address, and a customer can order to different places.
+      - name: purchase_date
+        description: Purchase date. Foreign key to dim_date.
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_day
+      - name: items_count
+        description: Number of items in the order. 0 for orders without items in the source.
+      - name: payment_value
+        description: Total paid for the order, all payment methods, in BRL.
+      - name: review_score
+        description: Score of the latest review (1 to 5). Null when the order has no review.
   - name: fct_order_items
     description: One row per item within an order.
     data_tests:

@@ -31,3 +31,32 @@ models:
         data_tests: [unique, not_null]
       - name: orders_count
         description: Number of orders placed by the customer.
+  - name: fct_order_items
+    description: One row per item within an order.
+    data_tests:
+      - dbt_utils.equal_rowcount:
+          arguments:
+            compare_model: ref('stg_olist__order_items')
+    columns:
+      - name: order_item_sk
+        description: Primary key. Surrogate key from order_id + order_item_id.
+        data_tests: [unique, not_null]
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('fct_orders')
+                field: order_id
+      - name: product_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+      - name: seller_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_sellers')
+                field: seller_id

@@ -13,7 +13,17 @@ st.markdown("Visualização interativa construída a partir do Data Warehouse (d
 def load_data():
     try:
         engine = get_olap_engine()
-        query = "SELECT * FROM analytics.fct_customer_orders;"
+        query = """
+                SELECT
+                    order_id,
+                    customer_unique_id,
+                    delivery_city  AS city,
+                    delivery_state AS state,
+                    order_status,
+                    purchased_at,
+                    delivered_at
+                FROM analytics.fct_orders;
+                """
         df = pd.read_sql(query, engine)
         
         # Conversão de datas

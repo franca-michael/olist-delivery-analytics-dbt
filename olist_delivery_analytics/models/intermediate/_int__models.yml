@@ -18,3 +18,21 @@ models:
     columns:
       - name: order_id
         data_tests: [unique, not_null]
+  - name: int_orders__delivery_status
+    description: >
+      One row per order, with the OTIF flags. Rules: finalized = delivered, canceled or unavailable
+      (orders in transit are left out of the denominator); in full = status delivered with a
+      delivery date (proxy, Olist has no ordered x delivered quantity); on time = delivered by the
+      end of the promised day (date comparison, not time); OTIF = on time and in full, so canceled
+      and unavailable count as failures.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: is_finalized
+        data_tests: [not_null]
+      - name: is_on_time
+        data_tests: [not_null]
+      - name: is_otif
+        data_tests: [not_null]
+      - name: delivery_delay_days
+        description: Days between the promised and the actual delivery date. Positive is late, negative is early. Null when not delivered.

@@ -22,6 +22,19 @@ flowchart LR
 | Visualização | Streamlit + Plotly |
 | Ambiente | Python 3.12 + Poetry |
 
+## Regra de OTIF
+
+OTIF (On Time In Full) mede a parcela de pedidos entregues no prazo prometido e completos.
+
+| Termo | Definição no projeto | Decisão e motivo |
+|---|---|---|
+| Pedido finalizado | `order_status` em `delivered`, `canceled` ou `unavailable` | Pedidos em trânsito ficam fora do denominador, para não punir quem ainda está no prazo |
+| On Time | Entregue até o fim do dia da data prometida | Comparação por data, não por hora: a promessa ao cliente é um dia |
+| In Full | Status `delivered` e data de entrega preenchida | A Olist não tem quantidade pedida x entregue; isto é um proxy |
+| OTIF | On Time **e** In Full | Cancelado e indisponível contam como falha |
+| Mês de referência | Mês da data prometida de entrega | Mede a promessa que venceu no período, como em operação logística |
+| Vendedor | Cada vendedor do pedido responde pelo pedido inteiro | Um pedido com itens de 2 vendedores conta uma vez para cada um |
+
 ## Como rodar
 
 Pré-requisitos: Docker Desktop, Python 3.12 (o dbt ainda não suporta versões mais novas), Poetry e Git.

@@ -99,3 +99,34 @@ models:
               arguments:
                 to: ref('dim_sellers')
                 field: seller_id
+  - name: mart_otif_by_seller_month
+    description: >
+      One row per seller and reference month. OTIF of finalized orders, where the reference month
+      is the month of the promised delivery date (the promise that fell due in the period).
+      An order with items from two sellers counts once for each of them. Finalized orders without
+      items cannot be attributed to a seller and are not in this mart.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [seller_id, reference_month]
+    columns:
+      - name: seller_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_sellers')
+                field: seller_id
+      - name: reference_month
+        description: First day of the month of the promised delivery date.
+        data_tests: [not_null]
+      - name: orders_finalized
+        description: Denominator. Finalized orders of the seller in the month.
+      - name: otif_pct
+        description: Share of finalized orders delivered on time and in full, from 0 to 100.
+        data_tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100

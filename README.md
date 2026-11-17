@@ -81,8 +81,8 @@ Pré-requisitos: Docker Desktop, Python 3.12 (o dbt ainda não suporta versões 
 | Staging das 8 tabelas da Olist, tipado e testado | Pronto |
 | Dashboard inicial | Pronto |
 | Modelo dimensional: fct_orders, fct_order_items e 4 dimensões, com grão documentado | Pronto |
-| Regra de OTIF documentada | Próxima etapa |
-| Testes com dbt_utils, singulares e unitários | Planejado |
+| Regra de OTIF documentada e OTIF por vendedor e mês | Pronto |
+| Testes com dbt_utils, singulares e unitários | Próxima etapa |
 | dbt docs publicado e CI no GitHub Actions | Planejado |
 
 O planejamento completo está nas [issues do milestone v1.0](https://github.com/franca-michael/olist-delivery-analytics-dbt/milestones).

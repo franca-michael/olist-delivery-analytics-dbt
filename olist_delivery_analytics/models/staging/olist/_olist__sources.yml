@@ -4,6 +4,12 @@ sources:
   - name: olist
     description: Brazilian e-commerce public dataset by Olist (Kaggle), loaded as-is into the raw schema by src/el_pipeline.py.
     schema: raw
+    config:
+      # coluna que o el_pipeline.py grava com o horário da carga
+      loaded_at_field: _loaded_at
+      freshness:
+        warn_after: {count: 7, period: day}
+        error_after: {count: 30, period: day}
     tables:
       - name: orders
         identifier: olist_orders_dataset

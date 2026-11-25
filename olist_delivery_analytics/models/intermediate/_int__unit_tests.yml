@@ -1,0 +1,23 @@
+version: 2
+
+unit_tests:
+  - name: otif_flags_follow_business_rule
+    description: >
+      One fictitious order per case of the OTIF rule in the README. If someone changes the date
+      comparison, the in full proxy or the finalized statuses, this test fails before the model is built.
+    model: int_orders__delivery_status
+    given:
+      - input: ref('stg_olist__orders')
+        rows:
+          - {order_id: on_time_last_minute, order_status: delivered, delivered_at: "2018-01-10 23:00:00", estimated_delivery_at: "2018-01-10 00:00:00"}
+          - {order_id: late_one_day,        order_status: delivered, delivered_at: "2018-01-11 08:00:00", estimated_delivery_at: "2018-01-10 00:00:00"}
+          - {order_id: delivered_no_date,   order_status: delivered, delivered_at: null,                  estimated_delivery_at: "2018-01-10 00:00:00"}
+          - {order_id: canceled,            order_status: canceled,  delivered_at: null,                  estimated_delivery_at: "2018-01-10 00:00:00"}
+          - {order_id: in_transit,          order_status: shipped,   delivered_at: null,                  estimated_delivery_at: "2018-01-10 00:00:00"}
+    expect:
+      rows:
+        - {order_id: on_time_last_minute, is_finalized: true,  is_on_time: true,  is_in_full: true,  is_otif: true,  delivery_delay_days: 0}
+        - {order_id: late_one_day,        is_finalized: true,  is_on_time: false, is_in_full: true,  is_otif: false, delivery_delay_days: 1}
+        - {order_id: delivered_no_date,   is_finalized: true,  is_on_time: false, is_in_full: false, is_otif: false, delivery_delay_days: null}
+        - {order_id: canceled,            is_finalized: true,  is_on_time: false, is_in_full: false, is_otif: false, delivery_delay_days: null}
+        - {order_id: in_transit,          is_finalized: false, is_on_time: false, is_in_full: false, is_otif: false, delivery_delay_days: null}

@@ -35,6 +35,22 @@ OTIF (On Time In Full) mede a parcela de pedidos entregues no prazo prometido e 
 | Mês de referência | Mês da data prometida de entrega | Mede a promessa que venceu no período, como em operação logística |
 | Vendedor | Cada vendedor do pedido responde pelo pedido inteiro | Um pedido com itens de 2 vendedores conta uma vez para cada um |
 
+## Qualidade de dados
+
+| Tipo | O que protege | Exemplos |
+|---|---|---|
+| Genérico (nativo e dbt_utils) | Chaves, nulos, relacionamentos, valores aceitos, faixas | `unique`, `relationships`, `accepted_range` do `otif_pct` |
+| Singular | Regras do negócio no dado real | Entrega antes da compra (aviso); total do mart = pedidos da fonte |
+| Unitário | A lógica da regra de OTIF com casos conhecidos | Entregue às 23h do dia prometido está no prazo; 1 pedido conta 1 vez por vendedor |
+| Freshness | Dado velho | Aviso com 7 dias sem carga, erro com 30 |
+
+### Problemas conhecidos do dado
+
+| Problema | Ocorrências | Tratamento |
+|---|---|---|
+| Entrega registrada antes da compra | 0 | checado |
+| Status `delivered` sem data de entrega | 8 | Conta como falha de OTIF (sem prova de entrega) |
+
 ## Como rodar
 
 Pré-requisitos: Docker Desktop, Python 3.12 (o dbt ainda não suporta versões mais novas), Poetry e Git.
@@ -52,7 +68,7 @@ Pré-requisitos: Docker Desktop, Python 3.12 (o dbt ainda não suporta versões 
    ```
 4. **Instalar dependências** (com Python 3.12)
    ```bash
-   poetry env use python3.12     # no Windows: poetry env use py -3.12
+   poetry env use 3.12.1    # troque pela sua versão 3.12 (python --version)
    poetry install
    ```
 5. **Carregar os dados** (CSV → OLTP → schema `raw` do OLAP)
@@ -63,8 +79,9 @@ Pré-requisitos: Docker Desktop, Python 3.12 (o dbt ainda não suporta versões 
 6. **Rodar o dbt** (modelos e testes)
    ```bash
    set -a; source .env; set +a
-   cd ecommerce_analytics
+   cd olist_delivery_analytics
    poetry run dbt deps
+   poetry run dbt source freshness
    poetry run dbt build
    cd ..
    ```
@@ -82,7 +99,13 @@ Pré-requisitos: Docker Desktop, Python 3.12 (o dbt ainda não suporta versões 
 | Dashboard inicial | Pronto |
 | Modelo dimensional: fct_orders, fct_order_items e 4 dimensões, com grão documentado | Pronto |
 | Regra de OTIF documentada e OTIF por vendedor e mês | Pronto |
-| Testes com dbt_utils, singulares e unitários | Próxima etapa |
-| dbt docs publicado e CI no GitHub Actions | Planejado |
+| Testes genéricos, singulares, unitários e freshness da fonte | Pronto |
+| dbt docs publicado | Próxima etapa |
+| CI no GitHub Actions | Planejado |
 
 O planejamento completo está nas [issues do milestone v1.0](https://github.com/franca-michael/olist-delivery-analytics-dbt/milestones).
+
+
+Testes
+Nenhuma entrega anterior à compra no dado real
+0 pedidos com entrega antes da compra

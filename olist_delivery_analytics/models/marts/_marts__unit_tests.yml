@@ -1,0 +1,27 @@
+version: 2
+
+unit_tests:
+  - name: otif_counts_each_order_once_per_seller
+    description: >
+      Seller s1 has a late order with 2 items and an on time order with 1 item: 2 orders, 50% OTIF.
+      Counting items would give 3 orders and 33.33%. Order o3 has items from s1 and s2 and counts for
+      both. The in transit order o4 is left out.
+    model: mart_otif_by_seller_month
+    given:
+      - input: ref('fct_order_items')
+        rows:
+          - {order_id: o1, order_item_id: 1, seller_id: s1}
+          - {order_id: o1, order_item_id: 2, seller_id: s1}
+          - {order_id: o2, order_item_id: 1, seller_id: s1}
+          - {order_id: o3, order_item_id: 1, seller_id: s2}
+          - {order_id: o4, order_item_id: 1, seller_id: s2}
+      - input: ref('int_orders__delivery_status')
+        rows:
+          - {order_id: o1, estimated_delivery_at: "2018-01-10 00:00:00", is_finalized: true,  is_on_time: false, is_in_full: true,  is_otif: false}
+          - {order_id: o2, estimated_delivery_at: "2018-01-20 00:00:00", is_finalized: true,  is_on_time: true,  is_in_full: true,  is_otif: true}
+          - {order_id: o3, estimated_delivery_at: "2018-01-25 00:00:00", is_finalized: true,  is_on_time: true,  is_in_full: true,  is_otif: true}
+          - {order_id: o4, estimated_delivery_at: "2018-01-28 00:00:00", is_finalized: false, is_on_time: false, is_in_full: false, is_otif: false}
+    expect:
+      rows:
+        - {seller_id: s1, reference_month: "2018-01-01", orders_finalized: 2, orders_otif: 1, otif_pct: "50.00"}
+        - {seller_id: s2, reference_month: "2018-01-01", orders_finalized: 1, orders_otif: 1, otif_pct: "100.00"}
